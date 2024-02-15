@@ -7,7 +7,7 @@ export const initialState: PDFSlickStateProps = {
   isDocumentLoaded: false,
   pagesReady: false,
 
-  url: null,
+  src: null,
 
   numPages: 0,
   pageNumber: 0,

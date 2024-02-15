@@ -2,6 +2,7 @@ import { PDFViewer } from "pdfjs-dist/web/pdf_viewer";
 import { StoreApi } from "zustand";
 import { PDFSlick } from "./PDFSlick";
 import { PDFThumbnailView } from "./lib";
+import { TypedArray } from "pdfjs-dist/types/src/display/api";
 
 export type TPDFDocumentOutline = {
   title: string;
@@ -36,7 +37,7 @@ export type PDFSlickStateProps = {
   scrollMode: number;
 
   // documentInfo
-  url: string | null;
+  src: string | URL | TypedArray | ArrayBuffer | null;
   filename?: string;
   filesize?: number;
   title?: string;

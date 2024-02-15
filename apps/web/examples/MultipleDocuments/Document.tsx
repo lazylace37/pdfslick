@@ -37,7 +37,7 @@ export default function Document({
       filename: s.filename,
       pageNumber: s.pageNumber,
       numPages: s.numPages,
-      url: s.url,
+      url: s.src,
     }),
     shallow
   );

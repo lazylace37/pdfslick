@@ -30,7 +30,7 @@ export default function MultipleDocuments() {
       const url = URL.createObjectURL(file);
       const name = file.name;
       setDocs([...docs, { url, name }]);
-      setDoc({ url, filename: name });
+      setDoc({ src: url, filename: name });
     }
   };
 
@@ -50,7 +50,7 @@ export default function MultipleDocuments() {
                       url,
                       name,
                       setDoc,
-                      isSelected: doc?.url === url,
+                      isSelected: doc?.src === url,
                       setInitial: ix === 0,
                     }}
                   />
@@ -61,7 +61,7 @@ export default function MultipleDocuments() {
         </div>
 
         <aside className="hidden w-96 h-full relative border-l border-slate-300 bg-white shadow-sm sm:flex flex-col">
-          {doc && <Sidebar url={`${doc.url}`} filename={doc.filename} />}
+          {doc && <Sidebar url={`${doc.src}`} filename={doc.filename} />}
         </aside>
 
         <div

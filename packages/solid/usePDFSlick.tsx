@@ -8,7 +8,7 @@ import PDFSlickViewer from "./PDFSlickViewer";
 import { PDFSlickThumbnails } from "./PDFSlickThumbnails";
 
 type TUsePDFSlick = (
-  url: string | URL | undefined,
+  src: string | URL | ArrayBuffer | undefined,
   options?: PDFSlickOptions
 ) => {
   isDocumentLoaded: Accessor<boolean>;
@@ -53,7 +53,7 @@ function useStore<TState extends object, StateSlice>(
   return state;
 }
 
-export const usePDFSlick: TUsePDFSlick = (url, options) => {
+export const usePDFSlick: TUsePDFSlick = (src, options) => {
   const [isDocumentLoaded, setIsDocumentLoaded] = createSignal(false);
   const [areContainersMounted, setContainersMounted] = createSignal(false);
   const [container, setContainer] = createSignal<HTMLElement | null>(null);
@@ -74,7 +74,7 @@ export const usePDFSlick: TUsePDFSlick = (url, options) => {
   };
 
   createEffect(() => {
-    if (url && areContainersMounted()) {
+    if (src && areContainersMounted()) {
       const pdfSlick = new PDFSlick({
         container: container()!,
         thumbs: thumbs()!,
@@ -84,7 +84,7 @@ export const usePDFSlick: TUsePDFSlick = (url, options) => {
       setPdfSlick(pdfSlick);
       zustandStore.setState({ pdfSlick });
 
-      pdfSlick.loadDocument(url, options).then(() => setIsDocumentLoaded(true));
+      pdfSlick.loadDocument(src, options).then(() => setIsDocumentLoaded(true));
     }
   });
 

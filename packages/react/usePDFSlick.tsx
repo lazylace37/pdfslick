@@ -14,7 +14,7 @@ export type TUsePDFSlickStore = {
 };
 
 type TUsePDFSlick = (
-  url: string | URL | undefined,
+  src: string | URL | ArrayBuffer | undefined,
 
   options?: PDFSlickOptions
 ) => {
@@ -45,11 +45,11 @@ export function createStore(store: StoreApi<PDFSlickState>) {
 
 /**
  *
- * @param url PDF Document path
+ * @param src PDF Document path
  * @param options PDFSlick Options
  * @returns
  */
-export const usePDFSlick: TUsePDFSlick = (url, options) => {
+export const usePDFSlick: TUsePDFSlick = (src, options) => {
   const [isDocumentLoaded, setIsDocumentLoaded] = useState(false);
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
   const [thumbs, setThumbs] = useState<HTMLDivElement | null>(null);
@@ -73,19 +73,19 @@ export const usePDFSlick: TUsePDFSlick = (url, options) => {
   }, []);
 
   useEffect(() => {
-    if (url && container) {
+    if (src && container) {
       const pdfSlick = new PDFSlick({
         container,
         thumbs: thumbs!,
         store,
         options,
       });
-      pdfSlick.loadDocument(url, options).then(() => setIsDocumentLoaded(true));
+      pdfSlick.loadDocument(src, options).then(() => setIsDocumentLoaded(true));
       store.setState({ pdfSlick });
     }
 
     return () => {};
-  }, [url, container]);
+  }, [src, container]);
 
   return {
     isDocumentLoaded,

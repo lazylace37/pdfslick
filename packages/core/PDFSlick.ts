@@ -49,6 +49,7 @@ import {
   isValidScrollMode,
   isValidRotation,
 } from "./lib/ui_utils";
+import { TypedArray } from "pdfjs-dist/types/src/display/api";
 
 GlobalWorkerOptions.workerSrc = `//cdn.jsdelivr.net/npm/pdfjs-dist@${version}/build/pdf.worker.min.js`;
 
@@ -79,7 +80,7 @@ export class PDFSlick {
   #viewerContainer: HTMLDivElement | undefined;
   #thumbsContainer: HTMLDivElement | undefined;
   printService: any;
-  url: string | URL | undefined;
+  src: string | URL | TypedArray | ArrayBuffer | undefined;
   eventBus: EventBus;
   linkService: PDFLinkService;
   downloadManager: DownloadManager | null = null;
@@ -219,23 +220,23 @@ export class PDFSlick {
     this.store.setState({ scaleValue });
   }
 
-  async loadDocument(url: string | URL, options?: { filename?: string }) {
-    if (this.url) {
-      try {
-        URL.revokeObjectURL(this.url.toString());
-      } catch (err) {}
-    }
+  async loadDocument(src: string | URL | TypedArray | ArrayBuffer, options?: { filename?: string }) {
+    // if (this.src) {
+    //   try {
+    //     URL.revokeObjectURL(this.src.toString());
+    //   } catch (err) {}
+    // }
 
     this.document?.destroy();
     this.viewer?.cleanup();
 
-    this.url = url.toString();
+    this.src = src;
 
     const filename =
-      options?.filename ?? getPdfFilenameFromUrl(this.url?.toString());
+      options?.filename ?? getPdfFilenameFromUrl(this.src?.toString());
     this.filename = filename;
 
-    const pdfDocument = await getDocument({ url }).promise;
+    const pdfDocument = await getDocument(src).promise;
 
     this.document = pdfDocument;
     this.viewer.setDocument(this.document);
@@ -253,7 +254,7 @@ export class PDFSlick {
       numPages: pdfDocument.numPages,
       pageNumber: 1,
       isDocumentLoaded: true,
-      url: url.toString(),
+      src: src.toString(),
     });
 
     const rawAttachments =
@@ -438,7 +439,7 @@ export class PDFSlick {
   }
 
   async download() {
-    const url = this.url;
+    const src = this.src;
     const { filename } = this;
     try {
       // this._ensureDownloadComplete();
@@ -446,11 +447,11 @@ export class PDFSlick {
       const data = await this.document!.getData();
       const blob = new Blob([data], { type: "application/pdf" });
 
-      await this.downloadManager?.download(blob, url, filename, {});
+      await this.downloadManager?.download(blob, src, filename, {});
     } catch (reason) {
       // When the PDF document isn't ready, or the PDF file is still
       // downloading, simply download using the URL.
-      await this.downloadManager?.downloadUrl(url, filename, {});
+      await this.downloadManager?.downloadUrl(src, filename, {});
     }
   }
 
@@ -459,7 +460,7 @@ export class PDFSlick {
     // this._saveInProgress = true;
     // await this.pdfScriptingManager.dispatchWillSave();
 
-    const url = this.url;
+    const src = this.src;
     const { filename } = this;
     try {
       // this._ensureDownloadComplete();
@@ -467,7 +468,7 @@ export class PDFSlick {
       const data = await this.document!.saveDocument();
       const blob = new Blob([data], { type: "application/pdf" });
 
-      await this.downloadManager?.download(blob, url, filename, {});
+      await this.downloadManager?.download(blob, src, filename, {});
     } catch (reason: any) {
       // When the PDF document isn't ready, or the PDF file is still
       // downloading, simply fallback to a "regular" download.
